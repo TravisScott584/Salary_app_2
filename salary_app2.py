@@ -5,15 +5,26 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.ticker as mtick
-import os
 # Load model + encoders
-import os, gzip, pickle
+import os
+import requests
+import pickle
 
-BASE_DIR = os.path.dirname(__file__)
-model_path = os.path.join(BASE_DIR, "salary_model_r_match.pkl.gz")
+MODEL_URL = "https://github.com/TravisScott584/Salary_app_2/releases/download/v1.0/salary_model_r_match.pkl"
+MODEL_PATH = "salary_model_r_match.pkl"
 
-with gzip.open(model_path, "rb") as f:
+# Download once if not present
+if not os.path.exists(MODEL_PATH):
+    print("Downloading model file...")
+    r = requests.get(MODEL_URL)
+    r.raise_for_status()
+    with open(MODEL_PATH, "wb") as f:
+        f.write(r.content)
+
+# Load the model
+with open(MODEL_PATH, "rb") as f:
     model = pickle.load(f)
+
 
 
 
@@ -474,4 +485,5 @@ st.link_button(label="NSCG 2023 Survey",url="https://ncses.nsf.gov/surveys/natio
 st.subheader("Survey")
 st.text("Please take this quick survey to let us know about your experience!")
 st.link_button(label="Feedback",url="https://forms.office.com/Pages/ResponsePage.aspx?id=2RNYUX1x3UWeypqhnAnW-SVikx1a_l9DriBOVBbK_StUNkM3SUZZMlFVVUdJTUlaWTVGR1JKVlZVRS4u")
+
 
